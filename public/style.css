@@ -1,4 +1,4 @@
-/* 现代深色游戏化风格 */
+/* Vercel部署版本 - 直接包含样式内容 */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 * {
@@ -337,17 +337,6 @@ body {
     font-size: 0.9rem;
 }
 
-.synergy-indicator {
-    display: inline-block;
-    background: #666;
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: bold;
-    margin-left: 10px;
-}
-
 .team-actions {
     display: flex;
     gap: 10px;
@@ -383,84 +372,6 @@ body {
     cursor: move;
     position: relative;
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.player-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    margin-top: 16px;
-    padding-top: 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.player-action-btn {
-    width: 36px;
-    height: 36px;
-    border: none;
-    border-radius: 8px;
-    background: rgba(30, 41, 59, 0.9);
-    color: #ffffff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.player-action-btn:hover {
-    background: rgba(59, 130, 246, 0.9);
-    transform: scale(1.1);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.edit-btn:hover {
-    background: #3b82f6;
-    border-color: #409EFF;
-}
-
-.delete-btn:hover {
-    background: #ef4444;
-    border-color: #dc2626;
-}
-
-.copy-btn:hover {
-    background: #22c55e;
-    border-color: #16a34a;
-}
-
-/* 简化版选手卡片 */
-.player-card.simplified {
-    padding: 10px;
-    margin-bottom: 6px;
-}
-
-.player-card.simplified .player-info.simplified-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 6px;
-    margin-top: 6px;
-}
-
-.player-card.simplified .player-info-item {
-    text-align: center;
-}
-
-.player-card.simplified .player-info-label {
-    font-size: 0.65rem;
-    margin-bottom: 1px;
-    color: #b8b8b8;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-.player-card.simplified .player-info-value {
-    font-size: 0.75rem;
-    color: #f0f0f0;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .player-card.dragging {
@@ -634,26 +545,34 @@ body {
     gap: 4px;
 }
 
-/* 简化模式的默契选手样式 */
-.simplified-synergy {
+/* 简化版的选手卡片 */
+.player-card.simplified {
+    padding: 10px;
+    margin-bottom: 6px;
+}
+
+.player-card.simplified .player-info.simplified-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
     margin-top: 6px;
-    padding-top: 6px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.simplified-synergy .synergy-players-label {
+.player-card.simplified .player-info-item {
+    text-align: center;
+}
+
+.player-card.simplified .player-info-label {
     font-size: 0.65rem;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
+    color: #b8b8b8;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-.simplified-synergy-list {
-    gap: 2px;
-}
-
-.simplified-synergy-name {
-    font-size: 0.65rem;
-    padding: 1px 4px;
-    margin-bottom: 2px;
+.player-card.simplified .player-info-value {
+    font-size: 0.75rem;
+    color: #f0f0f0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .add-player-btn {
@@ -799,14 +718,13 @@ body {
     border-color: #606060;
 }
 
-/* 中等屏幕响应式设计 */
+/* 响应式设计 */
 @media (max-width: 1200px) {
     .teams-container {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-/* 响应式设计 */
 @media (max-width: 768px) {
     .container {
         padding: 10px;
@@ -907,209 +825,6 @@ body {
 
 .stat-value {
     animation: countUp 0.6s ease-out;
-}
-
-/* 新增选手表单样式 */
-.new-player-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.form-group label {
-    color: #cccccc;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.form-group input {
-    padding: 12px 15px;
-    border: 1px solid #404040;
-    border-radius: 8px;
-    background: #1a1a1a;
-    color: #ffffff;
-    font-size: 0.9rem;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: #606060;
-    background: #222222;
-}
-
-.score-preview {
-    margin-top: 5px;
-    font-size: 0.85rem;
-    font-weight: bold;
-}
-
-.position-checkboxes {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 10px;
-}
-
-.position-checkboxes label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    color: #a0a0a0;
-    transition: color 0.3s ease;
-}
-
-.position-checkboxes label:hover {
-    color: #cccccc;
-}
-
-.position-checkboxes input[type="checkbox"] {
-    accent-color: #606060;
-}
-
-.heroes-selector, .synergy-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.selected-heroes, .selected-synergy {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    min-height: 40px;
-    padding: 10px;
-    border: 1px solid #404040;
-    border-radius: 8px;
-    background: #1a1a1a;
-}
-
-.selected-hero-tag, .selected-synergy-tag {
-    background: #2a2a2a;
-    color: #cccccc;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    border: 1px solid #505050;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.remove-tag {
-    cursor: pointer;
-    font-weight: bold;
-    color: #666666;
-}
-
-.remove-tag:hover {
-    color: #999999;
-}
-
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* 英雄选择对话框 */
-.heroes-list-container {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.heroes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-}
-
-.hero-item {
-    padding: 10px;
-    border: 1px solid #404040;
-    border-radius: 8px;
-    background: #1a1a1a;
-    cursor: pointer;
-    text-align: center;
-}
-
-.hero-item:hover {
-    background: #252525;
-    border-color: #505050;
-}
-
-.hero-item.selected {
-    background: #2a2a2a;
-    border-color: #606060;
-}
-
-.hero-name {
-    font-weight: bold;
-    color: #e0e0e0;
-    margin-bottom: 3px;
-}
-
-.hero-nickname {
-    font-size: 0.75rem;
-    color: #999999;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* 默契选手选择 */
-.synergy-player-item {
-    background: #1a1a1a;
-    border: 1px solid #333333;
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 8px;
-    cursor: pointer;
-}
-
-.synergy-player-item:hover {
-    background: #252525;
-    border-color: #505050;
-}
-
-.synergy-player-item.selected {
-    background: #2a2a2a;
-    border-color: #606060;
-}
-
-/* 响应式表单 */
-@media (max-width: 768px) {
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-    
-    .position-checkboxes {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .heroes-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    }
 }
 
 /* 空状态提示 */

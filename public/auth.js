@@ -1,9 +1,10 @@
+// Vercel部署版本的认证脚本
+
 class AuthService {
     constructor() {
-        this.serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-            ? `http://localhost:3000` 
-            : `http://${window.location.hostname}:3000`;
+        this.serverUrl = window.location.origin;
     }
+
     async login(username, password) {
         try {
             const response = await fetch(`${this.serverUrl}/api/login`, {
@@ -18,7 +19,6 @@ class AuthService {
             const data = await response.json();
             
             if (data.success) {
-                // 保存登录状态到localStorage
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('currentUser', JSON.stringify(data.user));
                 return { success: true, message: data.message };
@@ -38,14 +38,12 @@ class AuthService {
                 credentials: 'include'
             });
             
-            // 清除本地存储
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('currentUser');
             
             return { success: true };
         } catch (error) {
             console.error('登出请求失败:', error);
-            // 即使请求失败也清除本地存储
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('currentUser');
             return { success: true };
@@ -54,7 +52,6 @@ class AuthService {
 
     async checkAuth() {
         try {
-            // 首先检查本地存储
             const localLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             const localUser = localStorage.getItem('currentUser');
             
@@ -62,7 +59,6 @@ class AuthService {
                 return { authenticated: false };
             }
 
-            // 然后验证服务器session
             const response = await fetch(`${this.serverUrl}/api/check-auth`, {
                 credentials: 'include'
             });
@@ -72,14 +68,12 @@ class AuthService {
             if (data.authenticated) {
                 return { authenticated: true, user: data.user };
             } else {
-                // 服务器session已过期，清除本地存储
                 localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('currentUser');
                 return { authenticated: false };
             }
         } catch (error) {
             console.error('验证认证状态失败:', error);
-            // 网络错误时，如果本地有登录信息，暂时保持登录状态
             const localLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             const localUser = localStorage.getItem('currentUser');
             if (localLoggedIn && localUser) {
@@ -106,7 +100,7 @@ class AuthService {
 // 登录页面逻辑
 document.addEventListener('DOMContentLoaded', function() {
     // 只在登录页面执行
-    if (!window.location.pathname.includes('login.html')) {
+    if (!window.location.pathname.includes('/login')) {
         return;
     }
 
@@ -120,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 检查是否已经登录
     authService.checkAuth().then(result => {
         if (result.authenticated) {
-            window.location.href = 'index.html';
+            window.location.href = '/';
         }
     });
 
@@ -154,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 // 跳转到主页面
-                window.location.href = 'index.html';
+                window.location.href = '/';
             } else {
                 showError(result.message);
             }

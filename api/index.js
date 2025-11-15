@@ -3,23 +3,20 @@ const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const session = require('express-session');
-const path = require('path');
-require('dotenv').config(); // 加载环境变量
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // PostgreSQL数据库连接
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_xZBodH1Auk7n@ep-aged-haze-admxtuaz-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+    connectionString: process.env.DATABASE_URL,
     ssl: {
-        rejectUnauthorized: true
+        rejectUnauthorized: false
     }
 });
 
 // 中间件
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'file://'],
+    origin: ['https://teamlist.vercel.app', 'http://localhost:3000', 'file://'],
     credentials: true
 }));
 app.use(express.json());
@@ -31,13 +28,10 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: { 
-        secure: process.env.NODE_ENV === 'production', // 生产环境中设置为true（需要HTTPS）
+        secure: process.env.NODE_ENV === 'production',
         maxAge: 24 * 60 * 60 * 1000 // 24小时
     }
 }));
-
-// 静态文件服务
-app.use(express.static(__dirname));
 
 // 验证数据库连接
 async function testConnection() {
@@ -69,7 +63,7 @@ async function testConnection() {
 }
 
 // 登录接口
-app.post('/api/login', async (req, res) => {
+app.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
         
@@ -124,7 +118,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 // 检查登录状态
-app.get('/api/check-auth', (req, res) => {
+app.get('/check-auth', (req, res) => {
     if (req.session.user) {
         res.json({ 
             authenticated: true, 
@@ -136,7 +130,7 @@ app.get('/api/check-auth', (req, res) => {
 });
 
 // 登出接口
-app.post('/api/logout', (req, res) => {
+app.post('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             return res.status(500).json({ 
@@ -152,7 +146,7 @@ app.post('/api/logout', (req, res) => {
 });
 
 // 注册用户接口（管理员功能）
-app.post('/api/register', async (req, res) => {
+app.post('/register', async (req, res) => {
     try {
         const { username, password } = req.body;
         
@@ -197,7 +191,7 @@ app.post('/api/register', async (req, res) => {
 });
 
 // 获取所有用户（管理员功能）
-app.get('/api/users', async (req, res) => {
+app.get('/users', async (req, res) => {
     try {
         const client = await pool.connect();
         const result = await client.query('SELECT name FROM users ORDER BY name');
@@ -219,7 +213,7 @@ app.get('/api/users', async (req, res) => {
 
 // 启动服务器
 app.listen(PORT, async () => {
-    console.log(`服务器运行在 http://localhost:${PORT}`);
+    console.log(`API服务器运行在 ${PORT}`);
     await testConnection();
 });
 

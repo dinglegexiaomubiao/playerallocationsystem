@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>比赛选手人员分配系统</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 <body>
     <div class="container">
@@ -69,7 +69,6 @@
                     <!-- 队伍卡片将动态生成 -->
                 </div>
             </section>
-
             <!-- 未分配选手池 -->
             <section class="players-section">
                 <div class="section-header">
@@ -235,7 +234,108 @@
 
     <!-- SweetAlert2 - 美观的对话框库 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="auth.js"></script>
-    <script src="script.js"></script>
+    <script>
+        class AuthService {
+            constructor() {
+                this.serverUrl = window.location.origin;
+            }
+
+            async login(username, password) {
+                try {
+                    const response = await fetch(`${this.serverUrl}/api/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username, password }),
+                        credentials: 'include'
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('currentUser', JSON.stringify(data.user));
+                        return { success: true, message: data.message };
+                    } else {
+                        return { success: false, message: data.message };
+                    }
+                } catch (error) {
+                    console.error('登录请求失败:', error);
+                    return { success: false, message: '网络连接失败，请检查服务器是否运行' };
+                }
+            }
+
+            async logout() {
+                try {
+                    const response = await fetch(`${this.serverUrl}/api/logout`, {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+                    
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('currentUser');
+                    
+                    return { success: true };
+                } catch (error) {
+                    console.error('登出请求失败:', error);
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('currentUser');
+                    return { success: true };
+                }
+            }
+
+            async checkAuth() {
+                try {
+                    const localLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                    const localUser = localStorage.getItem('currentUser');
+                    
+                    if (!localLoggedIn || !localUser) {
+                        return { authenticated: false };
+                    }
+
+                    const response = await fetch(`${this.serverUrl}/api/check-auth`, {
+                        credentials: 'include'
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.authenticated) {
+                        return { authenticated: true, user: data.user };
+                    } else {
+                        localStorage.removeItem('isLoggedIn');
+                        localStorage.removeItem('currentUser');
+                        return { authenticated: false };
+                    }
+                } catch (error) {
+                    console.error('验证认证状态失败:', error);
+                    const localLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                    const localUser = localStorage.getItem('currentUser');
+                    if (localLoggedIn && localUser) {
+                        try {
+                            return { authenticated: true, user: JSON.parse(localUser) };
+                        } catch (e) {
+                            return { authenticated: false };
+                        }
+                    }
+                    return { authenticated: false };
+                }
+            }
+
+            getCurrentUser() {
+                const userStr = localStorage.getItem('currentUser');
+                return userStr ? JSON.parse(userStr) : null;
+            }
+
+            isLoggedIn() {
+                return localStorage.getItem('isLoggedIn') === 'true';
+            }
+        }
+
+        // 加载主脚本
+        const script = document.createElement('script');
+        script.src = '../script.js';
+        document.head.appendChild(script);
+    </script>
 </body>
 </html>

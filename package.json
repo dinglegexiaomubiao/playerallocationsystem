@@ -1,0 +1,18 @@
+{
+  "name": "teamlist-management-system",
+  "version": "1.0.0",
+  "description": "比赛选手人员分配系统",
+  "main": "index.html",
+  "scripts": {
+    "dev": "live-server --port=8080",
+    "build": "echo 'No build process needed for vanilla JS project'",
+    "serve": "python -m http.server 8000 || npx serve ."
+  },
+  "keywords": ["team", "management", "esports", "dota"],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "dependencies": {}
+}

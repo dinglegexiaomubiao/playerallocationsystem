@@ -264,7 +264,7 @@ class TeamAssignmentSystem {
             { nickname: "元素法师", game_id: "ElementMage", group_nickname: "元素" }
         ];
 
-        this.unassignedPlayers = sampleNames.map((name, index) => ({
+        const players = sampleNames.map((name, index) => ({
             id: Date.now() + index,
             nickname: name.nickname,
             game_id: name.game_id,
@@ -278,6 +278,17 @@ class TeamAssignmentSystem {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         }));
+
+        // 添加一些预设的默契关系用于测试
+        if (players.length >= 4) {
+            players[0].synergy_players = [players[1].nickname, players[2].nickname]; // 暗夜猎手 -> 烈焰战士, 冰霜法师
+            players[1].synergy_players = [players[0].nickname]; // 烈焰战士 -> 暗夜猎手
+            players[2].synergy_players = [players[0].nickname]; // 冰霜法师 -> 暗夜猎手
+            players[3].synergy_players = [players[4].nickname]; // 雷霆骑士 -> 暗影刺客
+            players[4].synergy_players = [players[3].nickname]; // 暗影刺客 -> 雷霆骑士
+        }
+
+        this.unassignedPlayers = players;
     }
 
     getRandomHeroes(count) {
@@ -511,6 +522,20 @@ class TeamAssignmentSystem {
         return 'score-low';
     }
 
+    getSynergyPlayersWithGroupNicknames(synergyPlayerNicknames) {
+        const allPlayers = [...this.unassignedPlayers, ...this.teams.flatMap(t => t.players)];
+        return synergyPlayerNicknames.map(nickname => {
+            const player = allPlayers.find(p => p.nickname === nickname);
+            return player ? {
+                nickname: player.nickname,
+                group_nickname: player.group_nickname || player.nickname
+            } : {
+                nickname: nickname,
+                group_nickname: nickname
+            };
+        });
+    }
+
     calculateTeamScore(players) {
         return players.reduce((total, player) => total + player.score, 0);
     }
@@ -528,7 +553,20 @@ class TeamAssignmentSystem {
         const randomBgColor = this.generateLowSaturationColor();
         
         if (isSimplified) {
-            // 简化模式：只显示昵称、游戏ID、群昵称、天梯分数、冠军数量
+            // 简化模式：显示昵称、游戏ID、群昵称、天梯分数、冠军数量，以及默契选手
+            const synergyHtml = player.synergy_players && player.synergy_players.length > 0 ? `
+                <div class="synergy-players simplified-synergy">
+                    <div class="synergy-players-label">默契:</div>
+                    <div class="synergy-players-list simplified-synergy-list">
+                        ${this.getSynergyPlayersWithGroupNicknames(player.synergy_players).map(sp => `
+                            <span class="synergy-player-name simplified-synergy-name" title="${sp.nickname}">
+                                ${sp.group_nickname}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : '';
+            
             return `
                 <div class="player-card simplified" ${draggable} data-player-id="${player.id}" style="background: ${randomBgColor};">
                     ${!isDraggable ? `<button class="remove-player-btn" onclick="teamSystem.removePlayerFromTeam(${player.teamId}, ${player.id})">×</button>` : ''}
@@ -550,6 +588,7 @@ class TeamAssignmentSystem {
                             <span class="player-info-value">${player.championships}</span>
                         </div>
                     </div>
+                    ${synergyHtml}
                 </div>
             `;
         } else {
@@ -557,8 +596,12 @@ class TeamAssignmentSystem {
             const synergyHtml = player.synergy_players && player.synergy_players.length > 0 ? `
                 <div class="synergy-players">
                     <div class="synergy-players-label">默契选手:</div>
-                    <div>
-                        ${player.synergy_players.map(sp => `<span class="synergy-player-name">${sp}</span>`).join('')}
+                    <div class="synergy-players-list">
+                        ${this.getSynergyPlayersWithGroupNicknames(player.synergy_players).map(sp => `
+                            <span class="synergy-player-name" title="${sp.nickname}">
+                                ${sp.nickname} (${sp.group_nickname})
+                            </span>
+                        `).join('')}
                     </div>
                 </div>
             ` : '';
@@ -985,6 +1028,13 @@ class TeamAssignmentSystem {
         const container = document.getElementById('synergyPlayersList');
         const allPlayers = [...this.unassignedPlayers, ...this.teams.flatMap(t => t.players)];
         
+        // 确保所有选手都有synergy_players字段
+        allPlayers.forEach(player => {
+            if (!player.synergy_players) {
+                player.synergy_players = [];
+            }
+        });
+        
         let players = allPlayers.filter(player => 
             player.id !== this.getCurrentNewPlayerId() // 排除当前新增的选手
         );
@@ -1026,7 +1076,7 @@ class TeamAssignmentSystem {
                     <div class="player-info">
                         <div class="player-info-item">
                             <span class="player-info-label">群昵称</span>
-                            <span class="player-info-value">${player.group_nickname}</span>
+                            <span class="player-info-value">${player.group_nickname || player.nickname}</span>
                         </div>
                         <div class="player-info-item">
                             <span class="player-info-label">天梯分数</span>
@@ -1314,52 +1364,21 @@ class TeamAssignmentSystem {
         });
     }
 
-    showToast(message) {
-        // 创建临时提示元素
-        const toast = document.createElement('div');
-        toast.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(46, 204, 113, 0.9);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 10000;
-            font-size: 14px;
-            backdrop-filter: blur(4px);
-            animation: slideInRight 0.3s ease;
-        `;
-        toast.textContent = message;
-        
-        // 添加动画样式
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideInRight {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
+    showToast(message, type = 'success') {
+        // 使用 SweetAlert2 替代自定义 toast
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: type,
+            title: message,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
             }
-        `;
-        document.head.appendChild(style);
-        
-        document.body.appendChild(toast);
-        
-        // 3秒后自动移除
-        setTimeout(() => {
-            toast.style.animation = 'slideInRight 0.3s ease reverse';
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.parentNode.removeChild(toast);
-                }
-            }, 300);
-        }, 3000);
+        });
     }
 }
 

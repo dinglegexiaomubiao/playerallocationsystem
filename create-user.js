@@ -1,8 +1,10 @@
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
+require('dotenv').config(); // 加载环境变量
+
 // PostgreSQL数据库连接
 const pool = new Pool({
-    connectionString: 'postgresql://neondb_owner:npg_xZBodH1Auk7n@ep-aged-haze-admxtuaz-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+    connectionString: process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_xZBodH1Auk7n@ep-aged-haze-admxtuaz-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
     ssl: {
         rejectUnauthorized: true
     }

@@ -10,17 +10,23 @@
     "build": "echo 'No build process needed for vanilla JS project'",
     "serve": "python -m http.server 8000 || npx serve ."
   },
-  "keywords": ["team", "management", "esports", "dota"],
+  "keywords": [
+    "team",
+    "management",
+    "esports",
+    "dota"
+  ],
   "author": "Your Name",
   "license": "MIT",
   "devDependencies": {
     "live-server": "^1.2.2"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "pg": "^8.11.3",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
-    "express-session": "^1.17.3"
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "pg": "^8.11.3"
   }
 }

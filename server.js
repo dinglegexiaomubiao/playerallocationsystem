@@ -4,12 +4,14 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 const session = require('express-session');
 const path = require('path');
+require('dotenv').config(); // 加载环境变量
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // PostgreSQL数据库连接
 const pool = new Pool({
-    connectionString: 'postgresql://neondb_owner:npg_xZBodH1Auk7n@ep-aged-haze-admxtuaz-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+    connectionString: process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_xZBodH1Auk7n@ep-aged-haze-admxtuaz-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
     ssl: {
         rejectUnauthorized: true
     }
@@ -25,11 +27,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Session配置
 app.use(session({
-    secret: 'teamlist-secret-key-2024',
+    secret: process.env.SESSION_SECRET || 'teamlist-secret-key-2024',
     resave: false,
     saveUninitialized: false,
     cookie: { 
-        secure: false, // 在生产环境中设置为true（需要HTTPS）
+        secure: process.env.NODE_ENV === 'production', // 生产环境中设置为true（需要HTTPS）
         maxAge: 24 * 60 * 60 * 1000 // 24小时
     }
 }));

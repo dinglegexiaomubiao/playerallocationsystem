@@ -48,16 +48,31 @@
 
 ### 系统要求
 - 现代浏览器（Chrome 80+、Firefox 75+、Safari 13+、Edge 80+）
-- 无需额外安装依赖或服务器
+- Node.js 14+ （用于后端认证服务）
+- PostgreSQL数据库（已配置）
 
 ### 快速开始
 
-#### 方法一：直接使用
-1. 下载所有文件到本地目录
-2. 直接在浏览器中打开 `index.html` 文件
-3. 系统会自动生成示例数据，即可开始使用
+#### 方法一：完整部署（推荐，包含登录功能）
+1. **安装依赖**
+```bash
+npm install
+```
 
-#### 方法二：本地服务器（推荐）
+2. **启动后端服务器**
+```bash
+npm start
+# 或
+npm run server
+```
+后端服务器将在 `http://localhost:3000` 启动
+
+3. **访问系统**
+- 打开浏览器访问 `login.html`
+- 使用默认管理员账号登录：`admin` / `admin123`
+- 登录成功后自动跳转到主系统
+
+#### 方法二：仅前端部署（无登录功能）
 ```bash
 # 使用Python启动本地服务器
 python -m http.server 8000
@@ -67,6 +82,26 @@ npx serve .
 
 # 使用PHP启动本地服务器
 php -S localhost:8000
+```
+
+### 用户管理
+
+#### 创建新用户
+```bash
+# 创建用户
+node create-user.js create <username> <password>
+
+# 示例
+node create-user.js create player1 password123
+```
+
+#### 管理用户
+```bash
+# 列出所有用户
+node create-user.js list
+
+# 删除用户
+node create-user.js delete <username>
 ```
 
 ### 1. 初始化系统
@@ -192,9 +227,15 @@ php -S localhost:8000
 ```
 teamlist/
 ├── index.html          # 主页面 - 包含完整的HTML结构和所有模态框
+├── login.html          # 登录页面 - 用户认证界面
 ├── style.css          # 样式文件 - 现代深色游戏化风格，响应式设计
 ├── script.js          # 逻辑脚本 - 面向对象JavaScript，完整的系统功能
-├── README.md          # 说明文档
+├── auth.js            # 认证脚本 - 登录、登出、会话管理
+├── server.js          # 后端服务器 - Express + PostgreSQL
+├── create-user.js     # 用户管理工具 - 创建、删除、列出用户
+├── package.json       # 项目配置和依赖
+├── database.js        # 数据库配置（已集成到server.js）
+└── README.md          # 说明文档
 ```
 
 ### 主要文件说明

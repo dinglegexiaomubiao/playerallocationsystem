@@ -43,6 +43,10 @@
             </div>
             
             <div class="header-actions">
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <span class="user-name">欢迎，<span id="currentUserName"></span></span>
+                    <button id="logoutBtn" class="btn btn-secondary">退出登录</button>
+                </div>
                 <button id="resetBtn" class="btn btn-secondary">重置分配</button>
                 <button id="saveBtn" class="btn btn-primary">保存配置</button>
                 <button id="exportBtn" class="btn btn-secondary">导出数据</button>
@@ -231,6 +235,7 @@
 
     <!-- SweetAlert2 - 美观的对话框库 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="auth.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

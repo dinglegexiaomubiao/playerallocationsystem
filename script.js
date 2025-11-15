@@ -21,8 +21,10 @@ class TeamAssignmentSystem {
         this.tempSelectedSynergy = [];
         this.editingPlayerId = null;
         this.isEditing = false;
+        this.authService = new AuthService();
         
-        this.init();
+        // 先进行登录验证，再初始化系统
+        this.checkAuthAndInit();
     }
 
     // 获取内嵌的默认数据
@@ -56,10 +58,89 @@ class TeamAssignmentSystem {
             "timestamp": "2025-11-14T12:57:53.026Z"
         };
     }
+
+    // 检查认证状态并初始化系统
+    async checkAuthAndInit() {
+        try {
+            const authResult = await this.authService.checkAuth();
+            if (authResult.authenticated) {
+                // 显示用户信息
+                this.displayUserInfo(authResult.user);
+                // 初始化系统
+                await this.init();
+            } else {
+                // 未登录，跳转到登录页面
+                window.location.href = 'login.html';
+            }
+        } catch (error) {
+            console.error('认证检查失败:', error);
+            // 认证检查失败，跳转到登录页面
+            window.location.href = 'login.html';
+        }
+    }
+
+    // 显示用户信息
+    displayUserInfo(user) {
+        const userInfoDiv = document.getElementById('userInfo');
+        const userNameSpan = document.getElementById('currentUserName');
+        
+        if (userInfoDiv && userNameSpan) {
+            userNameSpan.textContent = user.name;
+            userInfoDiv.style.display = 'flex';
+        }
+    }
+
+    // 登出功能
+    async logout() {
+        try {
+            const result = await this.authService.logout();
+            if (result.success) {
+                await Swal.fire({
+                    icon: 'success',
+                    title: '登出成功',
+                    text: '正在跳转到登录页面...',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                
+                window.location.href = 'login.html';
+            }
+        } catch (error) {
+            console.error('登出失败:', error);
+            // 即使登出失败也跳转到登录页面
+            window.location.href = 'login.html';
+        }
+    }
+
     async init() {
         await this.loadData();
         this.setupEventListeners();
         this.render();
+        // 设置登出按钮事件
+        this.setupLogoutButton();
+    }
+
+    // 设置登出按钮
+    setupLogoutButton() {
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                Swal.fire({
+                    title: '确认退出',
+                    text: '确定要退出登录吗？',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    confirmButtonColor: '#3b82f6',
+                    cancelButtonColor: '#6b7280'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.logout();
+                    }
+                });
+            });
+        }
     }
 
     async loadData() {
